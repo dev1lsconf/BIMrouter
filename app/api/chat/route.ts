@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { routeWithJev } from "@/lib/jev";
-import { streamAgentReply } from "@/lib/openrouter";
+import { getAgentProvider, streamAgentReply } from "@/lib/agent-provider";
 import type { ChatEvent } from "@/lib/domain";
 import { validatePrompt } from "@/lib/prompt-validation";
 
@@ -50,12 +50,13 @@ export async function POST(request: Request) {
 
   const normalizedPrompt = validation.prompt;
   return eventStream(async (send) => {
+    const provider = getAgentProvider();
     const totalStartedAt = performance.now();
     const decisionStartedAt = performance.now();
     const decision = await routeWithJev(normalizedPrompt);
     const decisionMs = Math.round(performance.now() - decisionStartedAt);
     const rejected = decision.inBimScope < 0.5;
-    send({ type: "decision", decision, decisionMs });
+    send({ type: "decision", decision, decisionMs, provider });
 
     if (rejected) {
       send({

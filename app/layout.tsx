@@ -4,7 +4,7 @@ import { SessionProvider } from "@/components/session-context";
 
 export const metadata: Metadata = {
   title: "JEV BIM Router",
-  description: "Demostración local de routing BIM con JEV y OpenRouter.",
+  description: "Demostración local de routing BIM con JEV y OpenRouter o FreeLLMAPI.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

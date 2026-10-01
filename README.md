@@ -5,8 +5,7 @@ PoC local que demuestra cómo JEV enruta una solicitud BIM a un agente especiali
 ## Requisitos
 
 - Node.js 22.18 o superior (TypeScript nativo para el runner de pruebas).
-- Claves de TypeSafe/JEV y OpenRouter.
-- Un slug de modelo disponible en OpenRouter.
+- Clave de TypeSafe/JEV y una clave del proveedor de agentes seleccionado.
 
 ## Inicio rápido
 
@@ -21,7 +20,13 @@ Completa `.env.local`:
 TYPESAFE_API_KEY=tu_clave_typesafe
 OPENROUTER_API_KEY=tu_clave_openrouter
 OPENROUTER_MODEL=openrouter/free
+AGENT_PROVIDER=freellmapi
+FREELLMAPI_BASE_URL=http://localhost:3001/v1
+FREELLMAPI_API_KEY=tu_clave_freellmapi
+FREELLMAPI_MODEL=auto
 ```
+
+`AGENT_PROVIDER` admite `openrouter` o `freellmapi`. Para usar OpenRouter, establece `AGENT_PROVIDER=openrouter` y configura su modelo; para FreeLLMAPI se usa `auto` por defecto. Las credenciales se leen solo en el servidor. FreeLLMAPI debe estar activo en el puerto local 3001.
 
 Luego ejecuta:
 
@@ -36,14 +41,14 @@ Abre [http://localhost:3000](http://localhost:3000). El diagrama del flujo tambi
 1. JEV recibe una petición con `Noul` (ámbito BIM), `Choice` (agente) y `Score` (claridad).
 2. La app detiene solicitudes con probabilidad BIM menor que 0,5.
 3. El agente elegido recibe su prompt especialista y el fixture BIM local.
-4. OpenRouter transmite la respuesta y sus métricas al dashboard.
+4. El proveedor configurado (OpenRouter o FreeLLMAPI) transmite la respuesta y sus métricas al dashboard.
 
 Agentes disponibles: modelo general, interferencias, cantidades, arquitectura y planos, estructura e instalaciones MEP. Choice muestra la distribución de JEV; el panel y cada respuesta indican el agente asignado. El chat y las métricas solo viven durante la sesión. Los errores de API se muestran en el dashboard; no se generan respuestas de fallback.
 
 ## Estructura
 
 - `app/`: página Next.js y Route Handler del chat.
-- `src/lib/`: tipos del dominio, routing JEV, OpenRouter y fixture BIM.
+- `src/lib/`: tipos del dominio, routing JEV, adaptadores OpenRouter/FreeLLMAPI y fixture BIM.
 - `src/components/`: dashboard de chat y observabilidad.
 - `public/flow.html`: diagrama autónomo.
 - `docs/` y `tasks/`: intención, specs, ADRs y plan.
@@ -77,7 +82,12 @@ cp .env.example .env
 TYPESAFE_API_KEY=tu_clave_typesafe
 OPENROUTER_API_KEY=tu_clave_openrouter
 OPENROUTER_MODEL=openrouter/free
+AGENT_PROVIDER=openrouter
+FREELLMAPI_API_KEY=tu_clave_freellmapi
+FREELLMAPI_MODEL=auto
 ```
+
+Al usar FreeLLMAPI desde Docker, el contenedor debe llegar al servicio local mediante `FREELLMAPI_DOCKER_BASE_URL=http://host.docker.internal:3001/v1` (valor predeterminado de Compose). En Linux Compose resuelve ese nombre al host con `host-gateway`.
 
 Construye y arranca la aplicación:
 

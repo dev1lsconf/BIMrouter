@@ -44,13 +44,13 @@
     <div class="branch"><div class="branch-line"><span>Choice selecciona exactamente un agente</span></div><div class="branch-line"><span>Score y Noul se registran en el turno</span></div></div>
 
     <section class="flow" style="grid-template-columns:1fr 34px 1.25fr 34px 1fr" aria-label="Generación y observabilidad">
-      <article class="card gate"><span class="step">06 · AGENTE ESPECIALISTA</span><div class="mark">A</div><h2>OpenRouter</h2><p>El agente recibe el prompt y los datos BIM simulados relevantes. Un modelo compartido genera la respuesta.</p><span class="tag">Respuesta progresiva</span></article>
+      <article class="card gate"><span class="step">06 · AGENTE ESPECIALISTA</span><div class="mark">A</div><h2>Proveedor configurable</h2><p>OpenRouter o FreeLLMAPI local recibe el prompt y los datos BIM simulados relevantes; el proveedor genera la respuesta.</p><span class="tag">Respuesta progresiva</span></article>
       <div class="arrow" aria-hidden="true">→</div>
       <article class="card"><span class="step">07 · EXPERIENCIA</span><div class="mark">↗</div><h2>Chat en vivo</h2><p>Los fragmentos aparecen mientras se genera la respuesta. Los errores de proveedor se muestran; no se sustituyen por respuestas inventadas.</p><span class="tag">Sesión en memoria</span></article>
       <div class="arrow" aria-hidden="true">→</div>
       <article class="card choice"><span class="step">08 · OBSERVABILIDAD</span><div class="mark">◷</div><h2>Decisión y métricas</h2><p>Historial por turno, agente elegido, resultado JEV, tokens por proveedor y latencias.</p></article>
     </section>
-    <div class="metrics"><div class="metric">DECISIÓN JEV<b>latencia + tokens</b></div><div class="metric">CHOICE<b>opción + probabilidades</b></div><div class="metric">OPENROUTER<b>tokens + primer fragmento</b></div><div class="metric">TOTAL<b>tiempo extremo a extremo</b></div></div>
+    <div class="metrics"><div class="metric">DECISIÓN JEV<b>latencia + tokens</b></div><div class="metric">CHOICE<b>opción + probabilidades</b></div><div class="metric">PROVEEDOR<b>tokens + primer fragmento</b></div><div class="metric">TOTAL<b>tiempo extremo a extremo</b></div></div>
     <div class="errors"><b>Si falla una API:</b> el dashboard registra el error y deja visible el estado del turno. No hay fallback simulado.</div>
     <footer class="footer"><span>PoC local · BIM simulado · claves solo en el servidor</span><a href="/" target="_self">← Volver al dashboard</a></footer>
   </main>

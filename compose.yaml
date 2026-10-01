@@ -14,8 +14,14 @@ services:
     environment:
       NODE_ENV: production
       TYPESAFE_API_KEY: ${TYPESAFE_API_KEY:?Set TYPESAFE_API_KEY in .env}
-      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY in .env}
+      AGENT_PROVIDER: ${AGENT_PROVIDER:-openrouter}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       OPENROUTER_MODEL: ${OPENROUTER_MODEL:-openrouter/free}
+      FREELLMAPI_BASE_URL: ${FREELLMAPI_DOCKER_BASE_URL:-http://host.docker.internal:3001/v1}
+      FREELLMAPI_API_KEY: ${FREELLMAPI_API_KEY:-}
+      FREELLMAPI_MODEL: ${FREELLMAPI_MODEL:-auto}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test:
         - CMD

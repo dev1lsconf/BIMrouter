@@ -1,4 +1,5 @@
 export type AgentId = "model" | "clashes" | "quantities" | "architecture" | "structure" | "mep";
+export type AgentProvider = "openrouter" | "freellmapi";
 
 export type Decision = {
   inBimScope: number;
@@ -14,6 +15,7 @@ export type Decision = {
 };
 
 export type AgentMetrics = {
+  provider: AgentProvider;
   model: string;
   inputTokens?: number;
   outputTokens?: number;
@@ -22,7 +24,7 @@ export type AgentMetrics = {
 };
 
 export type ChatEvent =
-  | { type: "decision"; decision: Decision; decisionMs: number }
+  | { type: "decision"; decision: Decision; decisionMs: number; provider: AgentProvider }
   | { type: "delta"; text: string }
   | { type: "metrics"; metrics: AgentMetrics; totalMs: number }
   | { type: "complete"; message: string; totalMs: number }

@@ -9,10 +9,13 @@ export default function ActivityPage() {
   const { runs } = useSession();
   const totals = useMemo(() => {
     const completed = runs.filter((run) => run.status === "completo" || run.status === "fuera de alcance");
+    const agentRuns = completed.filter((run) => run.metrics);
+    const hasAgentUsage = agentRuns.some((run) => run.metrics?.inputTokens !== undefined || run.metrics?.outputTokens !== undefined);
     const durations = completed.map((run) => run.totalMs).filter((value): value is number => value !== undefined);
     return {
       jev: completed.reduce((sum, run) => sum + (run.decision?.inputTokens ?? 0) + (run.decision?.outputTokens ?? 0), 0),
-      openrouter: completed.reduce((sum, run) => sum + (run.metrics?.inputTokens ?? 0) + (run.metrics?.outputTokens ?? 0), 0),
+      agent: hasAgentUsage ? agentRuns.reduce((sum, run) => sum + (run.metrics?.inputTokens ?? 0) + (run.metrics?.outputTokens ?? 0), 0) : null,
+      agentRuns: agentRuns.length,
       avg: durations.length ? Math.round(durations.reduce((sum, value) => sum + value, 0) / durations.length) : 0,
     };
   }, [runs]);
@@ -23,13 +26,13 @@ export default function ActivityPage() {
       <div className="metrics-grid">
         <Metric label="Solicitudes" value={String(runs.length)} hint="en esta sesión" />
         <Metric label="Tokens JEV" value={number(totals.jev)} hint="entrada + salida" />
-        <Metric label="Tokens OpenRouter" value={number(totals.openrouter)} hint="uso informado por el proveedor" />
+        <Metric label="Tokens agente" value={totals.agent === null ? (totals.agentRuns ? "No informado" : "0") : number(totals.agent)} hint="uso informado por el proveedor" />
         <Metric label="Tiempo medio" value={totals.avg ? `${number(totals.avg)} ms` : "—"} hint="solicitudes completadas" />
       </div>
       <section className="panel activity-page-panel">
         <div className="panel-header"><div><h2>Registro de solicitudes</h2><p>Los datos se conservan solo mientras esta sesión siga abierta.</p></div></div>
         {runs.length === 0 ? <div className="activity-empty-state"><span>◷</span><h2>Sin actividad todavía</h2><p>Envía una consulta desde el Overview para ver aquí el agente asignado, el resultado JEV y sus métricas.</p></div> : <div className="activity-table-wrap">
-          <table className="activity-table"><thead><tr><th>Estado</th><th>Consulta</th><th>Agente asignado</th><th>Noul</th><th>Score</th><th>Tokens JEV</th><th>Tokens OpenRouter</th><th>Decisión JEV</th><th>Primer token</th><th>Tiempo total</th></tr></thead>
+          <table className="activity-table"><thead><tr><th>Estado</th><th>Consulta</th><th>Agente asignado</th><th>Proveedor</th><th>Noul</th><th>Score</th><th>Tokens JEV</th><th>Tokens agente</th><th>Decisión JEV</th><th>Primer token</th><th>Tiempo total</th></tr></thead>
             <tbody>{[...runs].reverse().map((run) => <ActivityEntry key={run.id} run={run} />)}</tbody>
           </table>
         </div>}
@@ -54,6 +57,7 @@ function ActivityEntry({ run }: { run: Run }) {
     <td><span className={`activity-status ${run.status}`}>{status}</span></td>
     <td className="activity-prompt" title={run.prompt}>{run.prompt}{run.error && <small role="alert">{run.error}</small>}</td>
     <td>{agent}</td>
+    <td>{run.provider === "freellmapi" ? "FreeLLMAPI" : run.provider === "openrouter" ? "OpenRouter" : "—"}</td>
     <td>{run.decision ? `${Math.round(run.decision.inBimScope * 100)}%` : "—"}</td>
     <td>{run.decision ? `${run.decision.clarity.toFixed(1)} / 5` : "—"}</td>
     <td>{jevTokens === undefined ? "—" : number(jevTokens)}</td>

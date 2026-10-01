@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { AGENTS, type ChatEvent } from "@/lib/domain";
+import { AGENTS, type AgentProvider, type ChatEvent } from "@/lib/domain";
 import { useSession, type Run } from "@/components/session-context";
 import { AppFrame } from "@/components/app-frame";
 
@@ -86,7 +86,7 @@ export function Dashboard() {
 
       function handleEvent(event: ChatEvent) {
         if (event.type === "decision") {
-          updateRun({ decision: event.decision, decisionMs: event.decisionMs });
+          updateRun({ decision: event.decision, decisionMs: event.decisionMs, provider: event.provider });
           setMessages((current) => current.map((message) => message.id === `${id}-assistant`
             ? { ...message, agent: event.decision.inBimScope >= 0.5 ? event.decision.agent : undefined, outOfScope: event.decision.inBimScope < 0.5 }
             : message));
@@ -134,7 +134,7 @@ export function Dashboard() {
           <div className="metrics-grid">
             <MetricCard label="Solicitudes" value={String(runs.length)} detail="esta sesión" marker="↗" />
             <MetricCard label="Tokens JEV" value={formatNumber(totals.jevTokens)} detail="entrada + salida" marker="◈" />
-            <MetricCard label="Tokens agente" value={totals.agentTokens === null ? (runs.length ? "—" : "0") : formatNumber(totals.agentTokens)} detail="OpenRouter" marker="◈" />
+            <MetricCard label="Tokens agente" value={totals.agentTokens === null ? (runs.length ? "—" : "0") : formatNumber(totals.agentTokens)} detail={providerLabel(latestRun?.provider)} marker="◈" />
             <MetricCard label="Tiempo medio" value={totals.averageMs ? `${formatNumber(totals.averageMs)} ms` : "—"} detail="extremo a extremo" marker="◷" />
           </div>
 
@@ -159,7 +159,7 @@ export function Dashboard() {
                 <textarea id="prompt" rows={2} value={prompt} onChange={(event) => setPrompt(event.target.value)} placeholder="Escribe una consulta sobre el modelo BIM…" disabled={busy} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void submit(prompt); } }} />
                 <div className="composer-footer"><span>Enter para enviar <span className="keycap">↵</span> · Shift + Enter para nueva línea</span><button className="send-button" type="submit" disabled={busy || !prompt.trim()} aria-label="Enviar consulta">↑</button></div>
               </form>
-              <div className="chat-footnote"><span>◈</span> JEV decide · OpenRouter responde · BIM simulado</div>
+              <div className="chat-footnote"><span>◈</span> JEV decide · {latestRun?.provider ? `${providerLabel(latestRun.provider)} responde` : "el proveedor activo responde"} · BIM simulado</div>
             </section>
 
             <aside className="right-column">
@@ -200,8 +200,8 @@ function DecisionDetails({ run }: { run: Run }) {
     <div className="primitive-row"><div><span className="primitive-name"><i className="primitive-dot choice" /> Choice <small>Distribución</small></span><strong>{Math.round(decision.agentConfidence * 100)}<small>%</small></strong></div><div className="choice-bars">{Object.entries(decision.agentProbabilities).map(([agent, probability]) => <div className="choice-bar" key={agent}><span>{AGENTS[agent as keyof typeof AGENTS].label}</span><span className="bar-track"><i style={{ width: `${Math.round(probability * 100)}%` }} /></span><b>{Math.round(probability * 100)}%</b></div>)}</div></div>
     <div className="primitive-row score-row"><div><span className="primitive-name"><i className="primitive-dot score" /> Score <small>Claridad</small></span><strong>{decision.clarity.toFixed(1)}<small> / 5</small></strong></div><div className="score-caption">{decision.clarityLegend[String(Math.round(decision.clarity))] ?? "Claridad del prompt"}</div></div>
     <div className="execution-stats"><div><span>JEV LATENCIA</span><strong>{run.decisionMs ?? "—"}<small> ms</small></strong></div><div><span>JEV TOKENS</span><strong>{formatNumber(decision.inputTokens + decision.outputTokens)}</strong></div></div>
-    {run.metrics && <div className="execution-stats agent-stats"><div><span>PRIMER TOKEN</span><strong>{run.metrics.firstTokenMs ?? "—"}<small> ms</small></strong></div><div><span>AGENTE TOTAL</span><strong>{run.metrics.totalMs}<small> ms</small></strong></div><div><span>TOKENS OPENROUTER</span><strong>{run.metrics.inputTokens === undefined && run.metrics.outputTokens === undefined ? "No informado" : formatNumber((run.metrics.inputTokens ?? 0) + (run.metrics.outputTokens ?? 0))}</strong></div></div>}
-    <div className="model-name"><span>MODELO JEV</span><b>{decision.model}</b>{run.metrics && <><span>MODELO OPENROUTER</span><b>{run.metrics.model}</b></>}</div>
+    {run.metrics && <div className="execution-stats agent-stats"><div><span>PRIMER TOKEN</span><strong>{run.metrics.firstTokenMs ?? "—"}<small> ms</small></strong></div><div><span>AGENTE TOTAL</span><strong>{run.metrics.totalMs}<small> ms</small></strong></div><div><span>TOKENS {providerLabel(run.metrics.provider).toUpperCase()}</span><strong>{run.metrics.inputTokens === undefined && run.metrics.outputTokens === undefined ? "No informado" : formatNumber((run.metrics.inputTokens ?? 0) + (run.metrics.outputTokens ?? 0))}</strong></div></div>}
+    <div className="model-name"><span>MODELO JEV</span><b>{decision.model}</b>{run.metrics && <><span>MODELO {providerLabel(run.metrics.provider).toUpperCase()}</span><b>{run.metrics.model}</b></>}</div>
     {run.error && <div className="inline-error" role="alert">{run.error}</div>}
   </div>;
 }
@@ -209,4 +209,8 @@ function DecisionDetails({ run }: { run: Run }) {
 
 function formatNumber(value: number) {
   return new Intl.NumberFormat("es-ES").format(value);
+}
+
+function providerLabel(provider?: AgentProvider) {
+  return provider === "freellmapi" ? "FreeLLMAPI" : provider === "openrouter" ? "OpenRouter" : "Proveedor activo";
 }

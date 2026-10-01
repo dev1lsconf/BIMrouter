@@ -2,13 +2,13 @@
 
 ## Objetivo y usuario
 
-Entregar una PoC local, demostrable en una presentación técnica, que enrute una solicitud BIM a uno de seis agentes usando decisiones tipadas reales de JEV, genere la respuesta mediante OpenRouter y haga visible el recorrido completo.
+Entregar una PoC local, demostrable en una presentación técnica, que enrute una solicitud BIM a uno de seis agentes usando decisiones tipadas reales de JEV, genere la respuesta mediante OpenRouter o FreeLLMAPI local y haga visible el recorrido completo.
 
 ## Stack
 
 - Next.js App Router y TypeScript; Route Handlers sirven la API local y guardan las claves en el servidor.
 - Node.js 20 o superior; el SDK JavaScript oficial de TypeSafe documenta ese requisito.
-- SDK oficial `@typesafe-ai/sdk` para JEV y `@openrouter/sdk` para agentes.
+- SDK oficial `@typesafe-ai/sdk` para JEV, `@openrouter/sdk` para OpenRouter y `fetch` compatible con OpenAI para FreeLLMAPI.
 - CSS propio para la interfaz. No se requiere base de datos ni plataforma externa.
 - Vitest para pruebas unitarias/integración con proveedores simulados; comprobación manual end-to-end de proveedores reales como paso previo a la presentación.
 
@@ -49,7 +49,7 @@ El control de tipos en el límite evita que una respuesta de proveedor no valida
 
 ## Interfaz y flujo de datos
 
-El usuario envía un prompt al Route Handler local. El servidor valida el cuerpo, llama una vez a JEV con las preguntas `Noul`, `Choice` y `Score`, aplica el umbral de dominio y, si corresponde, envía el prompt y el contexto BIM simulado al agente elegido. OpenRouter transmite la respuesta progresivamente. La interfaz muestra chat, estado de la decisión, distribución de probabilidades de `Choice`, confianza, score y latencias.
+El usuario envía un prompt al Route Handler local. El servidor valida el cuerpo, llama una vez a JEV con las preguntas `Noul`, `Choice` y `Score`, aplica el umbral de dominio y, si corresponde, envía el prompt y el contexto BIM simulado al agente elegido mediante el proveedor configurado. OpenRouter o FreeLLMAPI transmiten la respuesta progresivamente. La interfaz muestra chat, proveedor y modelo efectivos, estado de la decisión, distribución de probabilidades de `Choice`, confianza, score y latencias.
 
 La API del servidor devuelve/eventualmente transmite datos suficientes para mostrar el estado de enrutamiento, el agente, fragmentos de texto, uso de tokens cuando esté disponible y estado/error final. Nunca devuelve claves. No se fijará un slug de modelo: `OPENROUTER_MODEL` debe ser configurable.
 
@@ -69,8 +69,12 @@ Variables locales requeridas en `.env.local`:
 
 ```dotenv
 TYPESAFE_API_KEY=
+AGENT_PROVIDER=openrouter
 OPENROUTER_API_KEY=
-OPENROUTER_MODEL=
+OPENROUTER_MODEL=openrouter/free
+FREELLMAPI_BASE_URL=http://localhost:3001/v1
+FREELLMAPI_API_KEY=
+FREELLMAPI_MODEL=auto
 ```
 
 Ignorar `.env.local` en Git y proporcionar `.env.example` sin valores secretos.
@@ -106,9 +110,9 @@ npm run build
 2. Prompts de las seis áreas BIM enrutan a sus agentes mediante `Choice` de JEV; cada respuesta muestra el agente asignado.
 3. `Noul < 0,5` detiene la llamada al agente; `Noul >= 0,5` continúa.
 4. `Score` de claridad 1–5 se muestra y no bloquea.
-5. La respuesta OpenRouter aparece incrementalmente; la UI muestra tokens y latencias disponibles por proveedor y total de sesión.
+5. La respuesta del proveedor configurado aparece incrementalmente; la UI muestra tokens y latencias disponibles, el proveedor y el total de sesión.
 6. Un error de proveedor aparece en UI y logs sin respuesta sintética.
-7. El diagrama HTML explica entradas, evaluación JEV, gate, agente, OpenRouter, respuesta y métricas.
+7. El diagrama HTML explica entradas, evaluación JEV, gate, agente, OpenRouter o FreeLLMAPI, respuesta y métricas.
 8. Lint, tests y build pasan; la verificación manual real se completa antes de presentar.
 
 ## Referencias oficiales

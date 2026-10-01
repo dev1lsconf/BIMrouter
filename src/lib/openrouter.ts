@@ -67,6 +67,7 @@ export async function streamAgentReply(
   if (!hasText) throw new Error("OpenRouter terminó el stream sin generar texto.");
 
   return {
+    provider: "openrouter",
     model: usedModel,
     inputTokens,
     outputTokens,

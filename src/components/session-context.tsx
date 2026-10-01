@@ -1,13 +1,14 @@
 "use client";
 
 import { createContext, useContext, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
-import type { AgentId, AgentMetrics, Decision } from "@/lib/domain";
+import type { AgentId, AgentMetrics, AgentProvider, Decision } from "@/lib/domain";
 
 export type Message = { id: string; role: "user" | "assistant"; text: string; agent?: AgentId; outOfScope?: boolean };
 export type Run = {
   id: string;
   prompt: string;
   status: "procesando" | "completo" | "fuera de alcance" | "error";
+  provider?: AgentProvider;
   decision?: Decision;
   decisionMs?: number;
   metrics?: AgentMetrics;
