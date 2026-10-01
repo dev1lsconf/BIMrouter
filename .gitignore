@@ -1,0 +1,16 @@
+# dependencies and build output
+node_modules/
+.next/
+out/
+coverage/
+
+# local secrets and environment
+.env
+.env.*
+!.env.example
+
+# editor and operating system
+.DS_Store
+*.pem
+.idea/
+.vscode/

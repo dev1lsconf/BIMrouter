@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050505">
+  <title>Flujo de routing · JEV BIM Router</title>
+  <style>
+    :root{color-scheme:dark;--bg:#050505;--panel:#0c0c0c;--line:#282828;--text:#ededed;--muted:#929292;--green:#50e3a4;--amber:#f1bd4b;--violet:#b99aff;--blue:#85bdff}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Geist,Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+    main{max-width:1100px;margin:auto;padding:48px 30px 54px}.eyebrow{color:#858585;font-size:10px;font-weight:650;letter-spacing:1px}h1{margin:12px 0 8px;font-size:30px;font-weight:570;letter-spacing:-.8px}header p{max-width:620px;color:var(--muted);font-size:13px;line-height:1.7}
+    .legend{display:flex;flex-wrap:wrap;gap:15px;margin:27px 0 19px;color:#929292;font-size:10px}.legend span{display:flex;align-items:center;gap:6px}.dot{width:7px;height:7px;border-radius:50%;background:var(--violet)}.dot.blue{background:var(--blue)}.dot.gold{background:var(--amber)}.dot.green{background:var(--green)}
+    .flow{display:grid;grid-template-columns:1fr 34px 1.25fr 34px 1fr 34px 1.25fr;align-items:stretch;gap:8px}.card{position:relative;min-height:165px;padding:15px;border:1px solid var(--line);border-radius:7px;background:var(--panel)}.card h2{margin:10px 0 7px;font-size:14px;font-weight:560}.card p{margin:0;color:#929292;font-size:10px;line-height:1.6}.step{color:#666;font-size:9px;font-weight:650;letter-spacing:.6px}.mark{display:grid;width:27px;height:27px;place-items:center;border:1px solid #373737;border-radius:6px;color:#ddd;font-size:11px}.tag{display:inline-block;margin-top:12px;padding:4px 6px;border:1px solid #333;border-radius:4px;color:#aaa;font-size:8px}.arrow{display:grid;place-items:center;color:#666;font-size:18px}.choice{border-color:#334354}.noul{border-color:#433c58}.score{border-color:#53462b}.gate{border-color:#31503f}.route-row{display:flex;flex-direction:column;gap:6px;margin-top:12px}.route-row span{padding:6px 7px;border:1px solid #252525;border-radius:4px;color:#aaa;font-size:9px}.route-row b{float:right;color:#888;font-weight:450}.branch{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0 15px}.branch-line{display:flex;align-items:center;justify-content:center;min-height:20px;color:#777;font-size:9px}.branch-line::before,.branch-line::after{content:"";height:1px;flex:1;background:#242424}.branch-line span{padding:0 8px}.split{display:grid;grid-template-columns:1fr 1fr;gap:12px}.agent-stack{display:grid;gap:7px;margin-top:13px}.agent{padding:8px 9px;border:1px solid #292929;border-radius:5px;background:#090909;font-size:10px}.agent small{display:block;margin-top:3px;color:#777;font-size:8px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}.metric{padding:9px;border:1px solid #262626;border-radius:5px;color:#858585;font-size:8px}.metric b{display:block;margin-top:6px;color:#d1d1d1;font-size:11px;font-weight:550}.errors{display:flex;align-items:center;gap:8px;margin-top:15px;padding:10px 12px;border:1px solid #4a2929;border-radius:5px;background:#130b0b;color:#d99797;font-size:9px}.errors b{color:#efaaaa;font-weight:550}.footer{display:flex;justify-content:space-between;gap:15px;margin-top:25px;padding-top:12px;border-top:1px solid #202020;color:#666;font-size:9px}.footer a{color:#aaa;text-decoration:none}.footer a:hover{color:white}
+    @media(max-width:850px){main{padding:34px 18px}.flow{grid-template-columns:1fr}.arrow{min-height:15px;transform:rotate(90deg)}.card{min-height:auto}.split{grid-template-columns:1fr}.branch{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:480px){h1{font-size:24px}.footer{flex-direction:column}.legend{gap:10px}}
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">JEV BIM ROUTER <span>/</span> ARQUITECTURA</div>
+      <h1>De una solicitud a un agente BIM</h1>
+      <p>JEV toma decisiones tipadas a partir del prompt. La aplicación aplica la política de routing y el agente seleccionado genera la respuesta usando un fixture BIM simulado.</p>
+    </header>
+    <div class="legend"><span><i class="dot"></i> Noul · ámbito</span><span><i class="dot blue"></i> Choice · agente</span><span><i class="dot gold"></i> Score · claridad</span><span><i class="dot green"></i> ejecución</span></div>
+
+    <section class="flow" aria-label="Flujo principal">
+      <article class="card"><span class="step">01 · ENTRADA</span><div class="mark">⌕</div><h2>Prompt del usuario</h2><p>Una pregunta en español sobre el modelo de demostración.</p><span class="tag">Chat local</span></article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="card noul"><span class="step">02 · JEV SYSTEM 1</span><div class="mark">N</div><h2>Noul · ¿Es BIM?</h2><p>Devuelve la probabilidad de que el prompt pertenezca al dominio de la demo.</p><span class="tag">Sí / No · 0 a 1</span></article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="card gate"><span class="step">03 · REGLA DE APLICACIÓN</span><div class="mark">½</div><h2>Gate · umbral 0,5</h2><p>Con Noul ≥ 0,5 continúa. Por debajo se detiene con una explicación visible.</p><span class="tag">Regla explícita en código</span></article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="card choice"><span class="step">04 · JEV SYSTEM 1</span><div class="mark">C</div><h2>Choice · agente</h2><p>Selecciona una opción predefinida y devuelve su distribución de probabilidades.</p><div class="route-row"><span>Modelo <b>elementos y niveles</b></span><span>Interferencias <b>choques</b></span><span>Cantidades <b>mediciones</b></span></div></article>
+    </section>
+
+    <div class="branch"><div class="branch-line"><span>si Noul &lt; 0,5 → respuesta fuera de alcance</span></div><div class="branch-line"><span>si Noul ≥ 0,5 → continua el routing</span></div></div>
+
+    <section class="split">
+      <article class="card score"><span class="step">EN PARALELO · JEV SYSTEM 1</span><div class="mark">S</div><h2>Score · claridad del prompt</h2><p>Puntúa la claridad en cinco niveles. Se muestra como señal explicativa; no bloquea ni altera la decisión de Choice.</p><span class="tag">0 a 4 en respuesta JEV · UI 1 a 5</span></article>
+      <article class="card gate"><span class="step">05 · CONTEXTO BIM SIMULADO</span><div class="mark">B</div><h2>El agente recibe su contexto</h2><p>Fixture local con niveles, elementos, dos interferencias y propiedades demostrativas.</p><div class="agent-stack"><div class="agent">Modelo<small>Elementos, niveles y propiedades</small></div><div class="agent">Interferencias<small>Colisiones, severidad y ubicación</small></div><div class="agent">Cantidades<small>Mediciones disponibles en el fixture</small></div></div></article>
+    </section>
+
+    <div class="branch"><div class="branch-line"><span>Choice selecciona exactamente un agente</span></div><div class="branch-line"><span>Score y Noul se registran en el turno</span></div></div>
+
+    <section class="flow" style="grid-template-columns:1fr 34px 1.25fr 34px 1fr" aria-label="Generación y observabilidad">
+      <article class="card gate"><span class="step">06 · AGENTE ESPECIALISTA</span><div class="mark">A</div><h2>OpenRouter</h2><p>El agente recibe el prompt y los datos BIM simulados relevantes. Un modelo compartido genera la respuesta.</p><span class="tag">Respuesta progresiva</span></article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="card"><span class="step">07 · EXPERIENCIA</span><div class="mark">↗</div><h2>Chat en vivo</h2><p>Los fragmentos aparecen mientras se genera la respuesta. Los errores de proveedor se muestran; no se sustituyen por respuestas inventadas.</p><span class="tag">Sesión en memoria</span></article>
+      <div class="arrow" aria-hidden="true">→</div>
+      <article class="card choice"><span class="step">08 · OBSERVABILIDAD</span><div class="mark">◷</div><h2>Decisión y métricas</h2><p>Historial por turno, agente elegido, resultado JEV, tokens por proveedor y latencias.</p></article>
+    </section>
+    <div class="metrics"><div class="metric">DECISIÓN JEV<b>latencia + tokens</b></div><div class="metric">CHOICE<b>opción + probabilidades</b></div><div class="metric">OPENROUTER<b>tokens + primer fragmento</b></div><div class="metric">TOTAL<b>tiempo extremo a extremo</b></div></div>
+    <div class="errors"><b>Si falla una API:</b> el dashboard registra el error y deja visible el estado del turno. No hay fallback simulado.</div>
+    <footer class="footer"><span>PoC local · BIM simulado · claves solo en el servidor</span><a href="/" target="_self">← Volver al dashboard</a></footer>
+  </main>
+</body>
+</html>

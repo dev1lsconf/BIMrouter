@@ -1,0 +1,59 @@
+import { choice, noul, score, TypeSafeClient } from "@typesafe-ai/sdk";
+import { isAgentId, type AgentId, type Decision } from "@/lib/domain";
+
+const agentOptions = {
+  model: "Consulta elementos, niveles, tipos y propiedades del modelo.",
+  clashes: "Analiza interferencias, elementos implicados, ubicación y severidad.",
+  quantities: "Responde mediciones y cantidades agregadas por categoría o nivel.",
+} as const;
+
+const clarityLevels = [
+  "Muy ambiguo: no identifica qué quiere saber.",
+  "Poco claro: falta el elemento o el alcance.",
+  "Parcialmente claro: se entiende la intención con datos incompletos.",
+  "Claro: indica el tema y el resultado esperado.",
+  "Muy claro: especifica tema, alcance y dato requerido.",
+] as const;
+
+export async function routeWithJev(prompt: string): Promise<Decision> {
+  if (!process.env.TYPESAFE_API_KEY) {
+    throw new Error("Falta configurar TYPESAFE_API_KEY en .env.local.");
+  }
+
+  const client = new TypeSafeClient({ logLevel: "error" });
+  const result = await client.systemOne({
+    state: { prompt },
+    questions: {
+      inBimScope: noul(
+        "¿Esta solicitud trata sobre consultar, analizar o medir un modelo BIM?",
+        {
+          true: "La solicitud pide información sobre un modelo, sus elementos, interferencias o cantidades.",
+          false: "La solicitud no se refiere a un modelo BIM ni a los datos simulados disponibles.",
+        },
+      ),
+      agent: choice("¿Qué agente debe responder esta solicitud?", agentOptions),
+      clarity: score("¿Qué tan clara y accionable es esta solicitud?", clarityLevels),
+    },
+  });
+
+  const { inBimScope, agent, clarity } = result.answers;
+  if (!isAgentId(agent.choice)) {
+    throw new Error("JEV devolvió un agente que no está configurado.");
+  }
+  const clarityLegend = Object.fromEntries(
+    Object.entries(clarity.legend).map(([level, description]) => [String(Number(level) + 1), description]),
+  );
+
+  return {
+    inBimScope: inBimScope.noul,
+    agent: agent.choice as AgentId,
+    agentProbabilities: agent.probabilities as Record<AgentId, number>,
+    agentConfidence: agent.confidence,
+    clarity: clarity.score + 1,
+    clarityLegend,
+    clarityConfidence: clarity.confidence,
+    model: result.model,
+    inputTokens: result.usage.input_tokens,
+    outputTokens: result.usage.output_tokens,
+  };
+}
