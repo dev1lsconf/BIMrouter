@@ -1,5 +1,5 @@
 import { OpenRouter } from "@openrouter/sdk";
-import type { AgentId } from "@/lib/domain";
+import type { AgentId, AgentMetrics } from "@/lib/domain";
 import { fixtureForAgent } from "@/lib/bim-fixture";
 
 const agentInstructions: Record<AgentId, string> = {
@@ -15,7 +15,7 @@ export async function streamAgentReply(
   agent: AgentId,
   prompt: string,
   onChunk: (text: string) => void,
-): Promise<{ model: string; inputTokens?: number; outputTokens?: number; firstTokenMs: number | null; totalMs: number }> {
+): Promise<AgentMetrics> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   const model = process.env.OPENROUTER_MODEL;
   if (!apiKey || !model) {

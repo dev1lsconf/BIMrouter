@@ -33,12 +33,13 @@ export async function streamFreeLlmReply(
   prompt: string,
   onChunk: (text: string) => void,
 ): Promise<AgentMetrics> {
-  const apiKey = process.env.FREELLMAPI_API_KEY;
+  const configuredApiKey = process.env.FREELLMAPI_API_KEY;
   const baseUrl = process.env.FREELLMAPI_BASE_URL;
   const model = process.env.FREELLMAPI_MODEL || "auto";
-  if (!apiKey || !baseUrl) {
+  if (!configuredApiKey || !baseUrl) {
     throw new Error("Configura FREELLMAPI_API_KEY y FREELLMAPI_BASE_URL en .env.local.");
   }
+  const apiKey = configuredApiKey;
 
   let base: URL;
   try {

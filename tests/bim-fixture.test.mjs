@@ -24,6 +24,19 @@ test("el agente de arquitectura recibe las áreas y sus equipos", () => {
   assert.deepEqual(areas[1].equipment, ["Lavadora", "Secadora"]);
 });
 
+test("el agente de arquitectura recibe elementos y puertas de Planta 3", () => {
+  const fixture = JSON.parse(fixtureForAgent("architecture"));
+  const door = fixture.doors.find((element) => element.id === "D-401");
+
+  assert.deepEqual(
+    { level: door.level, room: door.room, width: door.width, height: door.height },
+    { level: "Planta 3", room: "R-401", width: 0.9, height: 2.1 },
+  );
+  assert.ok(fixture.elements.some((element) => element.id === "W-101" && element.type === "Muro"));
+  assert.ok(fixture.elements.some((element) => element.id === "D-401" && element.type === "Puerta"));
+  assert.ok(fixture.elements.some((element) => element.id === "WIN-202" && element.type === "Ventana"));
+});
+
 test("el agente MEP recibe lavaderos y tomas de agua asociados a sus espacios", () => {
   const fixture = JSON.parse(fixtureForAgent("mep"));
   const laundryFixtures = fixture.plumbing.filter((item) => item.room || item.rooms);

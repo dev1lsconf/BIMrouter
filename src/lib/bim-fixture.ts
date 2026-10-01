@@ -36,6 +36,7 @@ export const bimFixture = {
     { id: "E-704", type: "Luminaria", level: "Planta 2", quantity: 12 },
     { id: "R-401", type: "Espacio", name: "Sala de formación", level: "Planta 3", area: 58.5 },
     { id: "R-402", type: "Espacio", name: "Terraza técnica", level: "Planta 3", area: 24.0 },
+    { id: "D-401", type: "Puerta", name: "Acceso a sala de formación", level: "Planta 3", room: "R-401", width: 0.9, height: 2.1 },
     { id: "C-801", type: "Columna", level: "Planta 3", width: 0.4, height: 3.1 },
     { id: "S-802", type: "Losa", level: "Planta 3", area: 82.5 },
     { id: "DUCT-803", type: "Conducto de extracción", level: "Planta 3", length: 9.2 },
@@ -138,7 +139,11 @@ export const bimFixture = {
 export function fixtureForAgent(agent: AgentId): string {
   if (agent === "clashes") return JSON.stringify(bimFixture.clashes, null, 2);
   if (agent === "quantities") return JSON.stringify(bimFixture.elements, null, 2);
-  if (agent === "architecture") return JSON.stringify({ levels: bimFixture.levels, ...bimFixture.architecture }, null, 2);
+  if (agent === "architecture") {
+    const elements = bimFixture.elements.filter((element) => ["Muro", "Puerta", "Ventana"].includes(element.type));
+    const doors = elements.filter((element) => element.type === "Puerta");
+    return JSON.stringify({ levels: bimFixture.levels, ...bimFixture.architecture, elements, doors }, null, 2);
+  }
   if (agent === "structure") return JSON.stringify(bimFixture.structure, null, 2);
   if (agent === "mep") return JSON.stringify(bimFixture.mep, null, 2);
   return JSON.stringify(bimFixture, null, 2);
