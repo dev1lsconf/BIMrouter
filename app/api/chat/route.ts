@@ -5,6 +5,11 @@ import type { ChatEvent } from "@/lib/domain";
 
 export const runtime = "nodejs";
 
+function safeErrorMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : "Error inesperado.";
+  return message.replace(/https:\/\/openrouter\.ai\/workspaces\/[^\s)]+/g, "OpenRouter dashboard");
+}
+
 function eventStream(run: (send: (event: ChatEvent) => void) => Promise<void>) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
@@ -13,7 +18,7 @@ function eventStream(run: (send: (event: ChatEvent) => void) => Promise<void>) {
       try {
         await run(send);
       } catch (error) {
-        send({ type: "error", message: error instanceof Error ? error.message : "Error inesperado." });
+        send({ type: "error", message: safeErrorMessage(error) });
       } finally {
         controller.close();
       }

@@ -9,6 +9,10 @@ coverage/
 .env.*
 !.env.example
 
+# local API credentials kept in scratch files
+/jevapi.txt
+/openrouter.txt
+
 # editor and operating system
 .DS_Store
 *.pem
