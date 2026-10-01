@@ -2,12 +2,12 @@ import { choice, noul, score, TypeSafeClient } from "@typesafe-ai/sdk";
 import { isAgentId, type AgentId, type Decision } from "@/lib/domain";
 
 const agentOptions = {
-  model: "Consulta general de elementos, niveles, tipos y propiedades del modelo BIM.",
-  clashes: "Analiza interferencias, elementos implicados, ubicación y severidad.",
-  quantities: "Responde mediciones y cantidades agregadas por categoría o nivel.",
-  architecture: "Consulta espacios, muros, puertas, ventanas, planos y láminas arquitectónicas.",
-  structure: "Consulta elementos y propiedades estructurales como columnas, vigas y losas.",
-  mep: "Consulta instalaciones MEP: climatización, conductos, fontanería y electricidad.",
+  model: "Consulta general de elementos, niveles desde sótano hasta cubierta, tipos, cantidades y propiedades del modelo BIM.",
+  clashes: "Analiza interferencias en cualquier nivel del proyecto, sus elementos implicados, ubicación y severidad.",
+  quantities: "Responde mediciones y cantidades agregadas por categoría o por nivel, desde sótano hasta cubierta.",
+  architecture: "Consulta espacios desde sótano hasta cubierta, incluidas áreas de lavado, muros, puertas, ventanas, planos y láminas arquitectónicas.",
+  structure: "Consulta elementos y propiedades estructurales por nivel, como columnas, vigas y losas.",
+  mep: "Consulta instalaciones MEP por nivel: climatización, ventilación, drenaje, fontanería y electricidad.",
 } as const;
 
 const clarityLevels = [

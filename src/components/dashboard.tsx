@@ -1,41 +1,23 @@
 "use client";
 
-import { useMemo, useState, type FormEvent, type ReactNode } from "react";
-import { AGENTS, type AgentId, type AgentMetrics, type ChatEvent, type Decision } from "@/lib/domain";
-import { bimFixture } from "@/lib/bim-fixture";
-
-type Message = { id: string; role: "user" | "assistant"; text: string; agent?: AgentId; outOfScope?: boolean };
-type Run = {
-  id: string;
-  prompt: string;
-  status: "procesando" | "completo" | "fuera de alcance" | "error";
-  decision?: Decision;
-  decisionMs?: number;
-  metrics?: AgentMetrics;
-  totalMs?: number;
-  error?: string;
-};
+import { useMemo, useState, type FormEvent } from "react";
+import Link from "next/link";
+import { AGENTS, type ChatEvent } from "@/lib/domain";
+import { useSession, type Run } from "@/components/session-context";
+import { AppFrame } from "@/components/app-frame";
 
 const examples = [
   "¿Qué elementos y niveles tiene el modelo?",
   "¿Qué interferencias hay en Planta 1?",
   "¿Cuántas puertas aparecen en el modelo?",
-  "¿Dónde encuentro los planos de Planta 1?",
+  "¿Dónde están las áreas de lavado y qué equipos tienen?",
   "Describe la viga B-302.",
   "¿Qué instalaciones MEP hay en el modelo?",
 ];
 
 export function Dashboard() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      text: "Hola. Pregunta sobre el modelo BIM de demostración y te mostraré cómo JEV elige el agente adecuado.",
-    },
-  ]);
-  const [runs, setRuns] = useState<Run[]>([]);
+  const { messages, setMessages, runs, setRuns, busy, setBusy } = useSession();
   const [prompt, setPrompt] = useState("");
-  const [busy, setBusy] = useState(false);
   const latestRun = runs.at(-1);
 
   const totals = useMemo(() => {
@@ -54,7 +36,7 @@ export function Dashboard() {
     const text = value.trim();
     if (!text || busy) return;
 
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const id = `run-${runs.length + 1}`;
     setBusy(true);
     setPrompt("");
     setMessages((current) => [
@@ -111,14 +93,16 @@ export function Dashboard() {
         }
         if (event.type === "delta") updateAssistant(event.text, true);
         if (event.type === "metrics") updateRun({ metrics: event.metrics, totalMs: event.totalMs, status: "completo" });
-        if (event.type === "complete") updateRun({ totalMs: event.totalMs, status: "fuera de alcance" }), updateAssistant(event.message);
+        if (event.type === "complete") {
+          updateRun({ totalMs: event.totalMs, status: "fuera de alcance" });
+          updateAssistant(event.message);
+        }
         if (event.type === "error") {
           updateRun({ status: "error", error: event.message });
           updateAssistant(`No se pudo completar la solicitud. ${event.message}`);
         }
       }
 
-      if (busy) setBusy(false);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Error inesperado.";
       updateRun({ status: "error", error: message });
@@ -140,31 +124,8 @@ export function Dashboard() {
   }
 
   return (
-    <main className="app-shell">
-      <aside className="sidebar">
-        <div className="brand"><span className="brand-mark">J</span><span>jev<span className="brand-light">router</span></span></div>
-        <div className="workspace-label">WORKSPACE</div>
-        <div className="workspace-switch"><span className="workspace-dot" /> BIM Demo <span className="chevron">⌄</span></div>
-        <div className="nav-group">
-          <div className="workspace-label">PROYECTO</div>
-          <a className="nav-item active" href="#overview"><span className="nav-symbol">◫</span> Overview</a>
-          <a className="nav-item" href="#decision-panel"><span className="nav-symbol">⌘</span> Decisiones</a>
-          <a className="nav-item" href="#activity-panel"><span className="nav-symbol">◷</span> Actividad</a>
-          <a className="nav-item" href="#bim-panel" aria-label="BIM, datos simulados"><span className="nav-symbol">▦</span> BIM</a>
-        </div>
-        <div className="sidebar-bottom">
-          <div className="sidebar-status"><span className="status-dot" /> Entorno local</div>
-          <div className="profile"><span className="avatar">JD</span><span><strong>Demo BIM</strong><small>Sesión local</small></span><span className="profile-menu">···</span></div>
-        </div>
-      </aside>
-
-      <section className="main-column">
-        <header className="topbar">
-          <div className="breadcrumbs"><span>Proyectos</span><span className="crumb-slash">/</span><strong>JEV BIM Router</strong></div>
-          <div className="topbar-right"><span className={`live-indicator ${latestRun?.status === "error" ? "failed" : latestRun?.metrics ? "verified" : ""}`}><i />{latestRun?.status === "error" ? "ERROR API" : latestRun?.metrics ? "RESPUESTA EN VIVO" : "JEV + OPENROUTER"}</span></div>
-        </header>
-
-        <div className="content" id="overview">
+    <AppFrame activePage="overview">
+      <div className="content" id="overview">
           <div className="page-heading">
             <div><div className="eyebrow">OBSERVABILIDAD <span>/</span> DEMO BIM</div><h1>Agent Router</h1><p>Enrutamiento probabilístico con JEV System 1</p></div>
             <button className="button button-secondary" onClick={newSession} disabled={busy}><span>＋</span> Nueva sesión</button>
@@ -185,7 +146,7 @@ export function Dashboard() {
                   <div className={`message-row ${message.role}`} key={message.id}>
                     {message.role === "assistant" && <span className="assistant-avatar">J</span>}
                     <div className="message-content">
-                      {message.role === "assistant" && <div className="message-label">JEV ROUTER <span>·</span>{message.agent ? <>AGENTE ASIGNADO: <b>{AGENTS[message.agent].label}</b></> : message.outOfScope ? "FUERA DE ALCANCE" : "BIM DEMO"}</div>}
+                      {message.role === "assistant" && <div className="message-label">BIMrouter <span>·</span>{message.agent ? <>AGENTE ASIGNADO: <b>{AGENTS[message.agent].label}</b></> : message.outOfScope ? "FUERA DE ALCANCE" : "BIM DEMO"}</div>}
                       <div className={`message-bubble ${message.role}`}>{message.text || <span className="typing"><i /><i /><i /></span>}</div>
                     </div>
                     {message.role === "user" && <span className="user-avatar">TÚ</span>}
@@ -207,18 +168,14 @@ export function Dashboard() {
                 {latestRun?.decision ? <DecisionDetails run={latestRun} /> : latestRun?.error ? <DecisionError message={latestRun.error} /> : <EmptyDecision />}
               </section>
 
-              <section className="panel activity-panel" id="activity-panel">
-                <div className="panel-header"><div><h2>Actividad reciente</h2><p>Eventos de esta sesión</p></div><span className="activity-count">{runs.length}</span></div>
-                {runs.length === 0 ? <div className="empty-activity">Las decisiones y métricas aparecerán aquí.</div> : <div className="activity-list">{[...runs].reverse().slice(0, 5).map((run) => <ActivityRow key={run.id} run={run} />)}</div>}
-              </section>
+              <Link className="panel page-link-card" href="/actividad"><span><b>Actividad de sesión</b><small>Revisar todas las solicitudes y métricas</small></span><strong>↗</strong></Link>
+              <Link className="panel page-link-card" href="/bim"><span><b>Datos BIM simulados</b><small>Consultar el fixture local de demostración</small></span><strong>↗</strong></Link>
               <div className="provider-note"><span className="lock-mark">⌑</span><span>Las claves API permanecen en el servidor.<br /><a href="/flow.html" target="_blank" rel="noreferrer">Ver diagrama del flujo <b>↗</b></a></span></div>
             </aside>
           </div>
-          <BimDataPanel />
           <footer className="page-footer"><span>JEV BIM ROUTER <b>·</b> PoC local</span><span>System 1 <b>·</b> TypeSafe AI</span></footer>
         </div>
-      </section>
-    </main>
+    </AppFrame>
   );
 }
 
@@ -249,75 +206,6 @@ function DecisionDetails({ run }: { run: Run }) {
   </div>;
 }
 
-function ActivityRow({ run }: { run: Run }) {
-  const name = run.decision ? AGENTS[run.decision.agent].label : "Solicitud BIM";
-  return <div className="activity-row"><span className={`activity-dot ${run.status === "error" ? "error" : run.status === "procesando" ? "pending" : ""}`} /><div><strong>{name}</strong><span>{run.prompt}</span></div><small>{run.totalMs !== undefined ? `${run.totalMs} ms` : run.status}</small></div>;
-}
-
-function BimDataPanel() {
-  return <section className="panel bim-panel" id="bim-panel">
-    <div className="panel-header"><div><h2>BIM · Datos simulados</h2><p>Fixture local completo usado por los seis agentes</p></div><span className="fixture-badge">LOCAL</span></div>
-    <div className="bim-data-content">
-      <div className="bim-summary">
-        <div><span>PROYECTO</span><strong>{bimFixture.project}</strong></div>
-        <div><span>UNIDAD BASE</span><strong>{bimFixture.units}</strong></div>
-        <div><span>NIVELES</span><strong>{bimFixture.levels.join(" · ")}</strong></div>
-      </div>
-
-      <BimDataGroup title={`Elementos del modelo · ${bimFixture.elements.length}`}>
-        <BimTable headers={["ID", "Tipo", "Nivel", "Propiedades"]}>
-          {bimFixture.elements.map((element) => <tr key={element.id}><td>{element.id}</td><td>{element.type}</td><td>{element.level}</td><td>{formatFields(element, ["id", "type", "level"])}</td></tr>)}
-        </BimTable>
-      </BimDataGroup>
-
-      <div className="bim-data-columns">
-        <BimDataGroup title={`Planos · ${bimFixture.architecture.sheets.length}`}>
-          <BimTable headers={["ID", "Plano", "Nivel", "Escala"]}>
-            {bimFixture.architecture.sheets.map((sheet) => <tr key={sheet.id}><td>{sheet.id}</td><td>{sheet.name}</td><td>{sheet.level}</td><td>{sheet.scale}</td></tr>)}
-          </BimTable>
-        </BimDataGroup>
-        <BimDataGroup title={`Espacios · ${bimFixture.architecture.spaces.length}`}>
-          <BimTable headers={["ID", "Espacio", "Nivel", "Área"]}>
-            {bimFixture.architecture.spaces.map((space) => <tr key={space.id}><td>{space.id}</td><td>{space.name}</td><td>{space.level}</td><td>{space.area} {space.unit}</td></tr>)}
-          </BimTable>
-        </BimDataGroup>
-      </div>
-
-      <BimDataGroup title={`Estructura · ${bimFixture.structure.system}`}>
-        <BimTable headers={["ID", "Elemento", "Nivel", "Propiedades"]}>
-          {bimFixture.structure.elements.map((element) => <tr key={element.id}><td>{element.id}</td><td>{element.type}</td><td>{element.level}</td><td>{formatFields(element, ["id", "type", "level"])}</td></tr>)}
-        </BimTable>
-      </BimDataGroup>
-
-      <BimDataGroup title="Instalaciones MEP">
-        <div className="mep-groups">{Object.entries(bimFixture.mep).map(([system, elements]) => <div className="mep-group" key={system}><strong>{system === "hvac" ? "Climatización" : system === "plumbing" ? "Fontanería" : "Electricidad"}</strong>{elements.map((element) => <div className="mep-element" key={element.id}><b>{element.id} · {element.type}</b><span>{element.level} · {formatFields(element, ["id", "type", "level"])}</span></div>)}</div>)}</div>
-      </BimDataGroup>
-
-      <BimDataGroup title={`Interferencias · ${bimFixture.clashes.length}`}>
-        <BimTable headers={["ID", "Nivel", "Severidad", "Elementos", "Descripción"]}>
-          {bimFixture.clashes.map((clash) => <tr key={clash.id}><td>{clash.id}</td><td>{clash.level}</td><td>{clash.severity}</td><td>{clash.elements.join(" · ")}</td><td>{clash.description}</td></tr>)}
-        </BimTable>
-      </BimDataGroup>
-      <p className="fixture-footnote">Datos ficticios de demostración; no representan un modelo BIM real.</p>
-    </div>
-  </section>;
-}
-
-function BimDataGroup({ title, children }: { title: string; children: ReactNode }) {
-  return <section className="bim-data-group"><h3>{title}</h3>{children}</section>;
-}
-
-function BimTable({ headers, children }: { headers: string[]; children: ReactNode }) {
-  return <div className="bim-table-wrap"><table className="bim-table"><thead><tr>{headers.map((header) => <th key={header}>{header}</th>)}</tr></thead><tbody>{children}</tbody></table></div>;
-}
-
-function formatFields(value: object, omitted: string[]) {
-  const labels: Record<string, string> = {
-    area: "Área (m²)", height: "Alto (m)", length: "Longitud (m)", quantity: "Unidades", thickness: "Espesor (m)",
-    width: "Ancho (m)", section: "Sección", system: "Sistema",
-  };
-  return Object.entries(value).filter(([key]) => !omitted.includes(key)).map(([key, field]) => `${labels[key] ?? key}: ${String(field)}`).join(" · ");
-}
 
 function formatNumber(value: number) {
   return new Intl.NumberFormat("es-ES").format(value);

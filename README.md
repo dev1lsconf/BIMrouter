@@ -4,7 +4,7 @@ PoC local que demuestra cómo JEV enruta una solicitud BIM a un agente especiali
 
 ## Requisitos
 
-- Node.js 20 o superior.
+- Node.js 22.18 o superior (TypeScript nativo para el runner de pruebas).
 - Claves de TypeSafe/JEV y OpenRouter.
 - Un slug de modelo disponible en OpenRouter.
 
@@ -47,3 +47,55 @@ Agentes disponibles: modelo general, interferencias, cantidades, arquitectura y 
 - `src/components/`: dashboard de chat y observabilidad.
 - `public/flow.html`: diagrama autónomo.
 - `docs/` y `tasks/`: intención, specs, ADRs y plan.
+
+
+## Pruebas automatizadas
+
+El runner usa el test runner integrado de Node; no necesita servicios externos ni claves API:
+
+```bash
+npm test
+```
+
+Para observar cambios mientras desarrollas:
+
+```bash
+npm run test:watch
+```
+
+La suite valida el fixture BIM (incluidas las áreas de lavado y la fontanería asociada) y la validación de prompts del endpoint.
+
+## Despliegue con Docker Compose
+
+Requiere Docker Engine y Docker Compose. Configura `.env` a partir del ejemplo y completa las dos claves:
+
+```bash
+cp .env.example .env
+```
+
+```dotenv
+TYPESAFE_API_KEY=tu_clave_typesafe
+OPENROUTER_API_KEY=tu_clave_openrouter
+OPENROUTER_MODEL=openrouter/free
+```
+
+Construye y arranca la aplicación:
+
+```bash
+docker compose up --build -d
+```
+
+Abre [http://localhost:3000](http://localhost:3000). Compose publica el servicio solo en loopback, ejecuta la imagen como usuario sin privilegios y comprueba `/` con un healthcheck. Para ver estado y logs:
+
+```bash
+docker compose ps
+docker compose logs -f app
+```
+
+Para detener y retirar el contenedor:
+
+```bash
+docker compose down
+```
+
+Las claves se inyectan al contenedor en tiempo de ejecución y no forman parte de la imagen. No copies `.env` al repositorio; ya está excluido por `.gitignore` y `.dockerignore`.

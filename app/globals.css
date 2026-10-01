@@ -169,19 +169,6 @@ h1 { font-size: 24px; font-weight: 590; letter-spacing: -.7px; }
 .model-name { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: center; gap: 7px; padding-top: 9px; border-top: 1px solid var(--line-soft); }
 .model-name b { overflow: hidden; color: #aaa; font-size: 8px; font-weight: 450; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
 .inline-error { margin-top: 10px; padding: 8px; border: 1px solid #562727; border-radius: 4px; background: #1b0e0e; color: #f19a9a; font-size: 9px; line-height: 1.5; }
-.activity-panel { min-height: 102px; }
-.empty-activity { padding: 14px; color: #707070; font-size: 10px; }
-.activity-list { padding: 2px 12px; }
-.activity-row { display: grid; grid-template-columns: 7px minmax(0,1fr) auto; align-items: start; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); }
-.activity-row:last-child { border-bottom: 0; }
-.activity-dot { width: 6px; height: 6px; margin-top: 4px; border-radius: 50%; background: #51cf91; }
-.activity-dot.error { background: var(--red); }.activity-dot.pending { background: var(--amber); }
-.activity-row div { min-width: 0; }
-.activity-row strong, .activity-row div > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.activity-row strong { color: #c9c9c9; font-size: 9px; font-weight: 550; }
-.activity-row div > span { max-width: 230px; margin-top: 3px; color: #747474; font-size: 8px; }
-.activity-row > small { color: #7c7c7c; font-size: 8px; white-space: nowrap; }
-.bim-panel { scroll-margin-top: 18px; }
 .fixture-badge { padding: 4px 6px; border: 1px solid #24513d; border-radius: 4px; color: #73dba7; font-size: 8px; font-weight: 650; letter-spacing: .45px; }
 .bim-data-content { padding: 14px; }
 .bim-summary { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 8px; }
@@ -252,4 +239,32 @@ h1 { font-size: 24px; font-weight: 590; letter-spacing: -.7px; }
   .bim-summary { grid-template-columns: 1fr 1fr; }.bim-summary > div:last-child { grid-column: 1 / -1; }
   .bim-data-columns, .mep-groups { grid-template-columns: 1fr; }.bim-data-content { padding: 10px; }
   .page-footer { font-size: 7px; }
+}
+
+.page-link-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 14px; color: inherit; text-decoration: none; }
+.page-link-card:hover { border-color: #414141; background: #101010; }
+.page-link-card b, .page-link-card small { display: block; }
+.page-link-card b { color: #d2d2d2; font-size: 10px; font-weight: 550; }
+.page-link-card small { margin-top: 5px; color: #777; font-size: 9px; }
+.page-link-card > strong { color: #777; font-weight: 450; }
+.activity-page-panel { min-height: 340px; }
+.activity-page-panel > .panel-header { min-height: 65px; }
+.activity-table-wrap { overflow-x: auto; }
+.activity-table { width: 100%; border-collapse: collapse; color: #aaa; font-size: 10px; text-align: left; }
+.activity-table th, .activity-table td { padding: 12px 13px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.activity-table th { color: #747474; background: #0a0a0a; font-size: 8px; font-weight: 650; letter-spacing: .45px; text-transform: uppercase; white-space: nowrap; }
+.activity-table tbody tr:last-child td { border-bottom: 0; }
+.activity-prompt { min-width: 220px; max-width: 420px; color: #d0d0d0; }
+.activity-prompt small { display: block; margin-top: 5px; color: #e48e8e; line-height: 1.4; }
+.activity-status { display: inline-flex; padding: 4px 6px; border: 1px solid #254b39; border-radius: 4px; color: #71d5a1; font-size: 8px; white-space: nowrap; }
+.activity-status.error { border-color: #542b2b; color: #ef9292; }
+.activity-status.procesando { border-color: #554622; color: #e4bd67; }
+.activity-status.fuera.de.alcance { border-color: #554622; color: #e4bd67; }
+.activity-empty-state { display: flex; align-items: center; flex-direction: column; padding: 58px 20px; text-align: center; }
+.activity-empty-state > span { display: grid; width: 36px; height: 36px; place-items: center; margin-bottom: 12px; border: 1px solid #333; border-radius: 50%; color: #999; }
+.activity-empty-state h2 { color: #ccc; font-size: 12px; font-weight: 550; }
+.activity-empty-state p { max-width: 360px; margin-top: 7px; color: #777; font-size: 10px; line-height: 1.6; }
+@media (max-width: 600px) {
+  .activity-table th, .activity-table td { padding: 9px 10px; }
+  .activity-page-panel { min-height: 250px; }
 }
