@@ -10,6 +10,7 @@ Permitir que la audiencia siga una petición desde el chat hasta la decisión y 
 - Chat con envío de prompt, estado de procesamiento, respuesta progresiva, errores y mensajes de fuera de alcance.
 - Panel de ejecución con primitivas y salidas JEV, umbral aplicado, agente elegido, modelo usado, distribución de Choice y claridad.
 - Panel de observabilidad con tokens de entrada/salida por JEV y OpenRouter, totales separados, latencia JEV, tiempo al primer fragmento, generación total, extremo a extremo, estado y logs recientes.
+- Navegación `BIM` debajo de `Actividad` que muestra el fixture completo: niveles, elementos, planos/espacios, estructura, sistemas MEP e interferencias.
 - La interfaz distingue “0 tokens” de “uso no informado”. El tiempo se expresa en milisegundos.
 
 ## Estado y seguridad
