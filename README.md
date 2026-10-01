@@ -20,7 +20,7 @@ Completa `.env.local`:
 ```dotenv
 TYPESAFE_API_KEY=tu_clave_typesafe
 OPENROUTER_API_KEY=tu_clave_openrouter
-OPENROUTER_MODEL=proveedor/modelo
+OPENROUTER_MODEL=openrouter/free
 ```
 
 Luego ejecuta:
@@ -38,7 +38,7 @@ Abre [http://localhost:3000](http://localhost:3000). El diagrama del flujo tambi
 3. El agente elegido recibe su prompt especialista y el fixture BIM local.
 4. OpenRouter transmite la respuesta y sus métricas al dashboard.
 
-Agentes disponibles: modelo, interferencias y cantidades. El chat y las métricas solo viven durante la sesión. Los errores de API se muestran en el dashboard; no se generan respuestas de fallback.
+Agentes disponibles: modelo general, interferencias, cantidades, arquitectura y planos, estructura e instalaciones MEP. Choice muestra la distribución de JEV; el panel y cada respuesta indican el agente asignado. El chat y las métricas solo viven durante la sesión. Los errores de API se muestran en el dashboard; no se generan respuestas de fallback.
 
 ## Estructura
 

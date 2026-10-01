@@ -1,4 +1,4 @@
-export type AgentId = "model" | "clashes" | "quantities";
+export type AgentId = "model" | "clashes" | "quantities" | "architecture" | "structure" | "mep";
 
 export type Decision = {
   inBimScope: number;
@@ -29,11 +29,15 @@ export type ChatEvent =
   | { type: "error"; message: string; decision?: Decision; decisionMs?: number };
 
 export const AGENTS: Record<AgentId, { label: string; description: string }> = {
-  model: { label: "Modelo", description: "Elementos, niveles y propiedades" },
+  model: { label: "Modelo general", description: "Elementos, niveles y propiedades" },
   clashes: { label: "Interferencias", description: "Colisiones y severidad" },
   quantities: { label: "Cantidades", description: "Mediciones por categoría y nivel" },
+  architecture: { label: "Arquitectura y planos", description: "Espacios, envolvente y láminas" },
+  structure: { label: "Estructura", description: "Columnas, vigas y losas" },
+  mep: { label: "Instalaciones MEP", description: "Climatización, fontanería y electricidad" },
 };
 
 export function isAgentId(value: string): value is AgentId {
-  return value === "model" || value === "clashes" || value === "quantities";
+  return value === "model" || value === "clashes" || value === "quantities"
+    || value === "architecture" || value === "structure" || value === "mep";
 }

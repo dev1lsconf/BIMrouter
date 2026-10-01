@@ -1,6 +1,6 @@
 # Tareas: Router de Agentes BIM con JEV
 
-> Estado actual: la documentación y el primer corte de la app están escritos. La autenticación de GitHub CLI configurada localmente expiró; la creación del repositorio remoto y la verificación de la app siguen pendientes.
+> Estado actual: la PoC local está publicada en el repositorio privado. El routing ofrece seis áreas BIM y muestra el agente asignado en el chat.
 
 ## Documentación aprobada
 
@@ -16,10 +16,10 @@
   - Dependencias: ninguna.
 - [ ] 2. Implementar adaptador JEV y política de routing tipada.
   - Aceptación: cada prompt produce Noul/Choice/Score; `< 0,5` rechaza; `>= 0,5` permite Choice; los errores no asignan ruta por defecto.
-  - Verificación: `npm test` casos 0,49 / 0,50, tres agentes, payload inválido y error proveedor.
+  - Verificación: `npm test` casos 0,49 / 0,50, seis agentes, payload inválido y error proveedor.
   - Dependencias: 1.
 - [ ] 3. Crear fixture BIM y agentes especialistas.
-  - Aceptación: fixture ficticio cubre modelo, interferencias y cantidades; cada agente tiene instrucciones propias y reconoce datos ausentes.
+  - Aceptación: fixture ficticio cubre modelo, interferencias, cantidades, arquitectura/planos, estructura e instalaciones MEP; cada agente tiene instrucciones propias y reconoce datos ausentes.
   - Verificación: `npm test` con preguntas representativas y fixture controlado.
   - Dependencias: 1.
 - [ ] 4. Conectar agente elegido a OpenRouter con streaming.

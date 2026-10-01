@@ -18,9 +18,12 @@ El usuario principal es quien presenta la PoC en una demostración técnica. La 
 
 ## Agentes
 
-- **Modelo:** consultas de elementos, niveles, propiedades y ubicación en el modelo simulado.
+- **Modelo general:** consultas de elementos, niveles, propiedades y ubicación en el modelo simulado.
 - **Interferencias:** consultas sobre colisiones predefinidas, severidad y elementos implicados.
 - **Cantidades:** consultas de mediciones y cantidades agregadas disponibles en el fixture.
+- **Arquitectura y planos:** consultas de espacios, elementos arquitectónicos y láminas simuladas.
+- **Estructura:** consultas de columnas, vigas, losas y sus propiedades disponibles.
+- **Instalaciones MEP:** consultas de climatización, fontanería y electricidad.
 
 ## Éxito
 
@@ -30,6 +33,6 @@ En una presentación local, el usuario puede demostrar que prompts distintos act
 
 - Requiere claves reales de TypeSafe/JEV y OpenRouter en variables de entorno locales.
 - No se simulan respuestas ante fallos de API: el dashboard muestra el error y registra el turno fallido.
-- BIM es un fixture local, no hay conexión a Revit, IFC, Autodesk Platform Services ni modelos BIM reales.
+- BIM es un fixture local con planos/láminas de ejemplo, no hay conexión a Revit, IFC, Autodesk Platform Services ni modelos BIM reales.
 - No hay despliegue público, autenticación, almacenamiento persistente ni uso multiusuario.
 - Las conversaciones y métricas se descartan al cerrar o reiniciar la aplicación.

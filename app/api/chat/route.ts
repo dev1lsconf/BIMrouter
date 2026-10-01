@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     if (rejected) {
       send({
         type: "complete",
-        message: "Esta solicitud parece estar fuera del ámbito BIM de la demo. Prueba con una consulta sobre el modelo, interferencias o cantidades.",
+        message: "Esta solicitud parece estar fuera del ámbito BIM de la demo. Prueba con una consulta de modelo, interferencias, cantidades, arquitectura y planos, estructura o instalaciones MEP.",
         totalMs: Math.round(performance.now() - totalStartedAt),
       });
       return;

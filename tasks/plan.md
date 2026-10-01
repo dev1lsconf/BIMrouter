@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Construir una PoC local en español con decisiones JEV reales, tres roles BIM simulados servidos por OpenRouter, observabilidad por sesión y un diagrama HTML autónomo. Las decisiones aceptadas están en [ADRs](../docs/decisions/); los contratos funcionales están en [specs](../docs/specs/).
+Construir una PoC local en español con decisiones JEV reales, seis áreas BIM simuladas servidas por OpenRouter, observabilidad por sesión y un diagrama HTML autónomo. Las decisiones aceptadas están en [ADRs](../docs/decisions/); los contratos funcionales están en [specs](../docs/specs/).
 
 ## Arquitectura y dependencias
 
@@ -21,16 +21,16 @@ La vista de dashboard y el esquema de resultados del servidor deben acordarse al
 
 1. **Fundación:** Next.js App Router, TypeScript, estilos base, scripts, `.gitignore`, `.env.example` y arranque documentado.
 2. **Routing JEV:** adaptar SDK, contrato tipado, tres preguntas, gate `< 0,5`, validación y log de decisión/error.
-3. **Slice de agentes:** fixture BIM, tres prompts especialistas, selección tras JEV y streaming desde OpenRouter con uso de tokens.
+3. **Slice de agentes:** fixture BIM, seis prompts especialistas, selección tras JEV y streaming desde OpenRouter con uso de tokens.
 4. **Dashboard:** chat progresivo, panel de decisión, métricas separadas por proveedor, estado y errores; historial solo de sesión.
 5. **Diagrama:** HTML autónomo actualizado para coincidir con el flujo real.
-6. **Cierre:** lint, tests, build y verificación manual en vivo de tres especialidades, rechazo fuera de ámbito, errores y apertura independiente del diagrama.
+6. **Cierre:** lint, tests, build y verificación manual en vivo de seis especialidades, rechazo fuera de ámbito, errores y apertura independiente del diagrama.
 
 ## Puntos de control
 
 - Tras la fundación: arranque local, validación de entorno y lint/build inicial.
 - Tras el slice JEV/agentes: prueba del flujo completo con adaptadores simulados y luego credenciales reales.
-- Antes de presentar: prueba de las tres rutas, gate, métricas, stream, errores y diagrama `file://`.
+- Antes de presentar: prueba de las seis rutas, gate, métricas, stream, errores y diagrama `file://`.
 
 ## Riesgos y mitigación
 

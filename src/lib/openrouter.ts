@@ -6,6 +6,9 @@ const agentInstructions: Record<AgentId, string> = {
   model: "Eres especialista en consultas de modelos BIM. Responde en español, de forma breve y usa solo el fixture proporcionado.",
   clashes: "Eres especialista en coordinación BIM. Explica las interferencias, severidad y elementos implicados usando solo el fixture.",
   quantities: "Eres especialista en mediciones BIM. Responde cantidades y unidades calculables con los datos proporcionados; no inventes totales ausentes.",
+  architecture: "Eres especialista BIM en arquitectura. Consulta espacios, elementos arquitectónicos y planos simulados; indica identificador, nivel y escala. Usa solo el fixture.",
+  structure: "Eres especialista BIM en estructuras. Explica columnas, vigas y losas con sus propiedades disponibles. Usa solo el fixture y admite los datos ausentes.",
+  mep: "Eres especialista BIM en instalaciones MEP. Distingue climatización, fontanería y electricidad. Usa solo el fixture y admite los datos ausentes.",
 };
 
 export async function streamAgentReply(

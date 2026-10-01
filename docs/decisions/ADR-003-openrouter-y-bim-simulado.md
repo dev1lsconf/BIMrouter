@@ -10,7 +10,7 @@ La PoC requiere respuestas generativas reales pero no conectar un modelo BIM rea
 
 ## Decisión
 
-Usar el SDK TypeScript oficial `@openrouter/sdk` en el servidor. Los tres agentes tendrán prompts de sistema especialistas y compartirán el modelo configurado por `OPENROUTER_MODEL`. Cada uno recibe el prompt del usuario más solo el contexto relevante del fixture BIM ficticio. Transmitir la respuesta en streaming y leer tokens reportados al finalizar cuando estén disponibles.
+Usar el SDK TypeScript oficial `@openrouter/sdk` en el servidor. Los seis agentes tendrán prompts de sistema especialistas y compartirán el modelo configurado por `OPENROUTER_MODEL`. Cada uno recibe el prompt del usuario más solo el contexto relevante del fixture BIM ficticio. Transmitir la respuesta en streaming y leer tokens reportados al finalizar cuando estén disponibles.
 
 ## Alternativas consideradas
 
@@ -20,7 +20,7 @@ Usar el SDK TypeScript oficial `@openrouter/sdk` en el servidor. Los tres agente
 
 ## Consecuencias
 
-- Se cambia modelo con una variable de entorno, sin alterar los tres roles.
+- Se cambia modelo con una variable de entorno, sin alterar los seis roles.
 - El fixture es explícitamente demostrativo y no debe presentarse como datos de un edificio real.
 - El contenido generado puede variar; los ejemplos de presentación deben usar preguntas que el fixture cubra.
 - Tokens y latencias de OpenRouter se separan de métricas JEV.

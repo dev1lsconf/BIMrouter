@@ -6,9 +6,12 @@ Ejecutar el agente elegido con el SDK TypeScript oficial de OpenRouter y respond
 
 ## Agentes y fixture
 
-- `model`: consulta elementos, niveles, tipos y propiedades del modelo.
+- `model`: consulta general de elementos, niveles, tipos y propiedades del modelo.
 - `clashes`: inspecciona registros de interferencia predefinidos, elementos implicados, ubicación y severidad.
 - `quantities`: responde cantidades/totales predefinidos por categoría y nivel.
+- `architecture`: consulta espacios, elementos arquitectónicos y planos/láminas simulados.
+- `structure`: consulta columnas, vigas y losas con propiedades disponibles.
+- `mep`: consulta sistemas de climatización, fontanería y electricidad.
 
 El fixture es explícitamente ficticio y versionado con la aplicación. El contexto que recibe el agente contiene los datos necesarios; no se integra una herramienta BIM externa. Cada agente conserva un prompt de sistema propio que limita su rol y le indica reconocer cuando el fixture no contiene un dato.
 

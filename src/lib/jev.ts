@@ -2,9 +2,12 @@ import { choice, noul, score, TypeSafeClient } from "@typesafe-ai/sdk";
 import { isAgentId, type AgentId, type Decision } from "@/lib/domain";
 
 const agentOptions = {
-  model: "Consulta elementos, niveles, tipos y propiedades del modelo.",
+  model: "Consulta general de elementos, niveles, tipos y propiedades del modelo BIM.",
   clashes: "Analiza interferencias, elementos implicados, ubicación y severidad.",
   quantities: "Responde mediciones y cantidades agregadas por categoría o nivel.",
+  architecture: "Consulta espacios, muros, puertas, ventanas, planos y láminas arquitectónicas.",
+  structure: "Consulta elementos y propiedades estructurales como columnas, vigas y losas.",
+  mep: "Consulta instalaciones MEP: climatización, conductos, fontanería y electricidad.",
 } as const;
 
 const clarityLevels = [
@@ -25,10 +28,10 @@ export async function routeWithJev(prompt: string): Promise<Decision> {
     state: { prompt },
     questions: {
       inBimScope: noul(
-        "¿Esta solicitud trata sobre consultar, analizar o medir un modelo BIM?",
+        "¿Esta solicitud trata sobre un modelo BIM, sus planos, espacios, estructura o instalaciones?",
         {
-          true: "La solicitud pide información sobre un modelo, sus elementos, interferencias o cantidades.",
-          false: "La solicitud no se refiere a un modelo BIM ni a los datos simulados disponibles.",
+          true: "La solicitud pide información sobre el modelo BIM simulado, sus planos, arquitectura, estructura, instalaciones, interferencias o cantidades.",
+          false: "La solicitud no se refiere al proyecto BIM simulado ni a sus datos disponibles.",
         },
       ),
       agent: choice("¿Qué agente debe responder esta solicitud?", agentOptions),

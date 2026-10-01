@@ -1,9 +1,9 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { AGENTS, type AgentMetrics, type ChatEvent, type Decision } from "@/lib/domain";
+import { AGENTS, type AgentId, type AgentMetrics, type ChatEvent, type Decision } from "@/lib/domain";
 
-type Message = { id: string; role: "user" | "assistant"; text: string };
+type Message = { id: string; role: "user" | "assistant"; text: string; agent?: AgentId; outOfScope?: boolean };
 type Run = {
   id: string;
   prompt: string;
@@ -16,9 +16,12 @@ type Run = {
 };
 
 const examples = [
+  "¿Qué elementos y niveles tiene el modelo?",
   "¿Qué interferencias hay en Planta 1?",
   "¿Cuántas puertas aparecen en el modelo?",
-  "Describe el conducto DUCT-401.",
+  "¿Dónde encuentro los planos de Planta 1?",
+  "Describe la viga B-302.",
+  "¿Qué instalaciones MEP hay en el modelo?",
 ];
 
 export function Dashboard() {
@@ -99,7 +102,12 @@ export function Dashboard() {
       }
 
       function handleEvent(event: ChatEvent) {
-        if (event.type === "decision") updateRun({ decision: event.decision, decisionMs: event.decisionMs });
+        if (event.type === "decision") {
+          updateRun({ decision: event.decision, decisionMs: event.decisionMs });
+          setMessages((current) => current.map((message) => message.id === `${id}-assistant`
+            ? { ...message, agent: event.decision.inBimScope >= 0.5 ? event.decision.agent : undefined, outOfScope: event.decision.inBimScope < 0.5 }
+            : message));
+        }
         if (event.type === "delta") updateAssistant(event.text, true);
         if (event.type === "metrics") updateRun({ metrics: event.metrics, totalMs: event.totalMs, status: "completo" });
         if (event.type === "complete") updateRun({ totalMs: event.totalMs, status: "fuera de alcance" }), updateAssistant(event.message);
@@ -175,7 +183,7 @@ export function Dashboard() {
                   <div className={`message-row ${message.role}`} key={message.id}>
                     {message.role === "assistant" && <span className="assistant-avatar">J</span>}
                     <div className="message-content">
-                      {message.role === "assistant" && <div className="message-label">JEV ROUTER <span>·</span> BIM DEMO</div>}
+                      {message.role === "assistant" && <div className="message-label">JEV ROUTER <span>·</span>{message.agent ? <>AGENTE ASIGNADO: <b>{AGENTS[message.agent].label}</b></> : message.outOfScope ? "FUERA DE ALCANCE" : "BIM DEMO"}</div>}
                       <div className={`message-bubble ${message.role}`}>{message.text || <span className="typing"><i /><i /><i /></span>}</div>
                     </div>
                     {message.role === "user" && <span className="user-avatar">TÚ</span>}
@@ -216,7 +224,7 @@ function MetricCard({ label, value, detail, marker }: { label: string; value: st
 }
 
 function EmptyDecision() {
-  return <div className="empty-decision"><div className="decision-orbit">J</div><strong>Esperando una solicitud</strong><span>JEV evaluará el prompt y mostrará el agente seleccionado.</span><div className="primitive-list"><span><i /> Noul <small>ámbito BIM</small></span><span><i /> Choice <small>agente</small></span><span><i /> Score <small>claridad</small></span></div></div>;
+  return <div className="empty-decision"><div className="decision-orbit">J</div><strong>Esperando una solicitud</strong><span>Choice puede asignar cualquiera de estas seis áreas BIM:</span><div className="agent-area-list">{Object.entries(AGENTS).map(([id, agent]) => <div key={id}><b>{agent.label}</b><span>{agent.description}</span></div>)}</div><div className="primitive-list"><span><i /> Noul <small>ámbito BIM</small></span><span><i /> Choice <small>agente</small></span><span><i /> Score <small>claridad</small></span></div></div>;
 }
 
 function DecisionError({ message }: { message: string }) {

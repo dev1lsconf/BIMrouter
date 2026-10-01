@@ -13,7 +13,7 @@ La demostración debe hacer visible cómo un modelo de decisión probabilística
 Usar `@typesafe-ai/sdk` desde el servidor, con una evaluación por prompt que incluya:
 
 - `Noul` para la probabilidad de que la solicitud pertenezca al ámbito BIM; detener si `< 0,5`.
-- `Choice` para escoger entre `model`, `clashes` y `quantities`; su opción define el agente.
+- `Choice` para escoger entre `model`, `clashes`, `quantities`, `architecture`, `structure` y `mep`; su opción define el agente.
 - `Score` para claridad del prompt en cinco niveles; registrar y mostrar, sin bloquear.
 
 Aplicar la regla de umbral y la validación de opción en código normal tras recibir respuestas tipadas. Un error no produce una ruta por defecto.

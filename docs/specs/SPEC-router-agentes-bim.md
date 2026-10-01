@@ -2,7 +2,7 @@
 
 ## Objetivo y usuario
 
-Entregar una PoC local, demostrable en una presentación técnica, que enrute una solicitud BIM a uno de tres agentes usando decisiones tipadas reales de JEV, genere la respuesta mediante OpenRouter y haga visible el recorrido completo.
+Entregar una PoC local, demostrable en una presentación técnica, que enrute una solicitud BIM a uno de seis agentes usando decisiones tipadas reales de JEV, genere la respuesta mediante OpenRouter y haga visible el recorrido completo.
 
 ## Stack
 
@@ -37,10 +37,11 @@ La implementación puede ajustar agrupaciones menores, manteniendo los límites 
 - No registrar secretos; representar datos ausentes como `null`/estado no disponible, no como cero.
 
 ```ts
-type AgentId = "model" | "clashes" | "quantities";
+type AgentId = "model" | "clashes" | "quantities" | "architecture" | "structure" | "mep";
 
 function isAgentId(value: string): value is AgentId {
-  return value === "model" || value === "clashes" || value === "quantities";
+  return value === "model" || value === "clashes" || value === "quantities"
+    || value === "architecture" || value === "structure" || value === "mep";
 }
 ```
 
@@ -90,7 +91,7 @@ npm run build
 - Tests de contrato del router con respuesta JEV tipada: dirige cada opción válida al agente correspondiente y preserva resultados y métricas.
 - Tests de agentes con proveedor simulado: cada agente usa su propio prompt y fixture; el stream actualiza la respuesta y completa métricas al final.
 - Tests de errores: claves inválidas, respuestas HTTP no exitosas, streams interrumpidos y ausencia de uso de tokens se presentan como error/valor no disponible, nunca como éxito inventado.
-- Prueba manual con proveedores reales: prompts BIM para las tres áreas, prompt fuera de dominio, métricas reales y recorrido visible.
+- Prueba manual con proveedores reales: prompts BIM para las seis áreas, prompt fuera de dominio, métricas reales y recorrido visible.
 - Abrir `public/diagrama-flujo.html` directamente, sin servidor ni recursos de red, y cotejar su flujo con la aplicación.
 
 ## Límites
@@ -102,7 +103,7 @@ npm run build
 ## Criterios de éxito
 
 1. La app arranca localmente con las tres variables de entorno y ninguna clave aparece en el navegador.
-2. Los tres tipos de prompt BIM enrutan a los agentes esperados mediante `Choice` de JEV.
+2. Prompts de las seis áreas BIM enrutan a sus agentes mediante `Choice` de JEV; cada respuesta muestra el agente asignado.
 3. `Noul < 0,5` detiene la llamada al agente; `Noul >= 0,5` continúa.
 4. `Score` de claridad 1–5 se muestra y no bloquea.
 5. La respuesta OpenRouter aparece incrementalmente; la UI muestra tokens y latencias disponibles por proveedor y total de sesión.
